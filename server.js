@@ -4,13 +4,20 @@ if (process.env.NODE_ENV !== 'production') {
 const express = require('express')
 var cors = require('cors')
 const nodemailer = require('nodemailer')
+const path = require('path')
+const publicPath = path.join(__dirname, 'client', 'build')
 
 const app = express()
 
 const PORT = process.env.PORT || 5000
 
 app.use(cors())
+app.use(express.static(publicPath))
 app.use(express.json())
+
+app.get('*', (req, res) => {
+  res.sendFile(path.join(publicPath, 'index.html'))
+})
 
 app.post('email', async (req, res) => {
   const { name, email } = req.body
