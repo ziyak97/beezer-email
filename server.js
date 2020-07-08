@@ -5,15 +5,28 @@ const express = require('express')
 var cors = require('cors')
 const nodemailer = require('nodemailer')
 const path = require('path')
+const { google } = require('googleapis')
+const OAuth2 = google.auth.OAuth2
 const publicPath = path.join(__dirname, 'client', 'build')
 
 const app = express()
 
-const PORT = process.env.PORT || 5000
+const PORT = process.env.PORT || 5001
 
 app.use(cors())
 app.use(express.static(publicPath))
 app.use(express.json())
+
+const oauth2Client = new OAuth2(
+  process.env.CLIENT_ID,
+  process.env.CLIENT_SECRET,
+  'https://developers.google.com/oauthplayground'
+)
+
+oauth2Client.setCredentials({
+  refresh_token: process.env.REFRESH_TOKEN,
+})
+const accessToken = oauth2Client.getAccessToken()
 
 app.get('*', (req, res) => {
   res.sendFile(path.join(publicPath, 'index.html'))
@@ -22,11 +35,18 @@ app.get('*', (req, res) => {
 app.post('/email', async (req, res) => {
   const { name, email } = req.body
   console.log(name, email)
-  const smtpTransport = nodemailer.createTransport(
-    'smtps://ziyak97%40gmail.com:' +
-      encodeURIComponent(process.env.PASSWORD) +
-      '@smtp.gmail.com:465'
-  )
+
+  const smtpTransport = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      type: 'OAuth2',
+      user: 'ziyak97@gmail.com',
+      clientId: process.env.CLIENT_ID,
+      clientSecret: process.env.CLIENT_SECRET,
+      refreshToken: process.env.REFRESH_TOKEN,
+      accessToken,
+    },
+  })
 
   const mailOptions = {
     from: 'ziyak97@gmail.com',
