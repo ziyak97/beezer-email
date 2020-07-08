@@ -19,7 +19,7 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(publicPath, 'index.html'))
 })
 
-app.post('email', async (req, res) => {
+app.post('/email', async (req, res) => {
   const { name, email } = req.body
   console.log(name, email)
   const smtpTransport = nodemailer.createTransport(
