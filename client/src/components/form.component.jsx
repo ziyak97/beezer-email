@@ -27,15 +27,19 @@ const Form = () => {
     const password = window.document.querySelector('input[name="password"]')
       .value
     const confirmPassword = e.target.value
-    console.log(password)
-    console.log(confirmPassword)
     if (password === confirmPassword) {
       setPasswordsMatch(true)
+    } else {
+      setPasswordsMatch(false)
     }
   }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+    const button = window.document.querySelector('button')
+    button.disabled = true
+
+    const form = window.document.querySelector('form')
     const name = window.document.querySelector('input[name="name"]').value
     const email = window.document.querySelector('input[name="email"]').value
     const password = window.document.querySelector('input[name="password"]')
@@ -46,25 +50,31 @@ const Form = () => {
 
     if (!name || !email || !password || !confirmPassword) {
       alert('Please fill in all the form fields!')
+      button.disabled = false
       return
     }
 
     if (password !== confirmPassword) {
       alert('Passwords do not match!')
+      button.disabled = false
       return
     }
 
     if (strength !== 4) {
       alert('Password not strong enough!')
+      button.disabled = false
       return
     }
 
     try {
       await Axios.post('/email', { name, email })
       alert('Email sent sucessfully!')
+      form.reset()
     } catch (err) {
       console.error(err)
       alert('There was a problem sending the email!')
+    } finally {
+      button.disabled = false
     }
   }
 
