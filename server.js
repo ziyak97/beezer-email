@@ -51,7 +51,7 @@ app.post('/email', async (req, res) => {
   const mailOptions = {
     from: 'ziyak97@gmail.com',
     to: email,
-    subject: name + ' | new message!',
+    subject: name + ' | new message from Ziyak!',
     text: `Hey, ${name}! Thanks for using my test signup form. If you like what you see and want to get in touch with me feel free to send me an email.`,
   }
 
